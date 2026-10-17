@@ -45,6 +45,7 @@ def load_model():
 with st.spinner("Loading model, please wait..."):
     model = load_model()
 
+# Correct Alphabetical Order of 36 Classes (Matching tf.keras dataset sorting)
 class_names = [
     'apple', 'banana', 'beetroot', 'bell pepper', 'cabbage', 'capsicum', 
     'carrot', 'cauliflower', 'chilli pepper', 'corn', 'cucumber', 'eggplant', 
@@ -82,8 +83,8 @@ if uploaded_file is not None:
     with col2:
         st.write("### Analysis Results")
         with st.spinner("Model is predicting..."):
-            # Preprocess image
-            image_resized = image.resize((128, 128))
+            # Preprocess image (Ensure RGB format and 128x128 resize)
+            image_resized = image.convert("RGB").resize((128, 128))
             img_array = np.array(image_resized) / 255.0
             img_array = np.expand_dims(img_array, axis=0)
             
@@ -91,7 +92,10 @@ if uploaded_file is not None:
             
             predicted_class_idx = np.argmax(predictions[0])
             predicted_class = class_names[predicted_class_idx]
-            confidence = float(tf.nn.softmax(predictions[0])[predicted_class_idx]) * 100
+            
+            # Proper Softmax Confidence Calculation
+            softmax_scores = tf.nn.softmax(predictions[0])
+            confidence = float(softmax_scores[predicted_class_idx]) * 100
         
         st.markdown(f"""
             <div class="prediction-box">
